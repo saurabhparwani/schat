@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+ <de.hdodenhof.circleimageview.CircleImageView
+     android:layout_width="70dp"
+     android:layout_height="70dp"
+     android:id="@+id/userlist_pic"
+     android:src="@drawable/avatar"
+     android:layout_marginLeft="5dp"
+     android:layout_marginBottom="10dp"
+     android:layout_centerVertical="true"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="UserName"
+        android:textColor="#000000"
+        android:id="@+id/userlist_name"
+        android:textStyle="normal"
+        android:textSize="24dp"
+        android:layout_toRightOf="@id/userlist_pic"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Hi there I am Using Lepit Chat App."
+        android:id="@+id/userlist_status"
+        android:layout_toRightOf="@id/userlist_pic"
+        android:layout_marginTop="45dp"
+        android:layout_marginLeft="10dp"
+        android:textStyle="normal"
+        android:textSize="18dp"
+        android:textColor="#000000"
+        android:textAlignment="textStart"
+        android:layout_marginBottom="5dp"/>
+    <ImageView
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:src="@drawable/greendot"
+        android:id="@+id/isonline"
+        android:layout_toRightOf="@id/userlist_name"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="25dp"
+        android:visibility="gone"/>
+</RelativeLayout>

@@ -1,0 +1,59 @@
+{
+  "project_info": {
+    "project_number": "597018829785",
+    "firebase_url": "https://lepitchatapp-e2726.firebaseio.com",
+    "project_id": "lepitchatapp-e2726",
+    "storage_bucket": "lepitchatapp-e2726.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:597018829785:android:61b2cdcb47955855",
+        "android_client_info": {
+          "package_name": "com.example.sonu3239.lepitchatapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "597018829785-lnktjqb9io3u3i2t886124ii2dvjmptu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.sonu3239.lepitchatapp",
+            "certificate_hash": "9f8335859d57dbf540618acfbe793061b282720c"
+          }
+        },
+        {
+          "client_id": "597018829785-hipunqd60pjj04hgvp5g7hih7l4o6i0c.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "597018829785-hipunqd60pjj04hgvp5g7hih7l4o6i0c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDdOURl5kICvUEzHM16j21kFAHwvMKjClU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "597018829785-hipunqd60pjj04hgvp5g7hih7l4o6i0c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

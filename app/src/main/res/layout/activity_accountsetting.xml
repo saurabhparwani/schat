@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Accountsetting"
+    android:background="@color/colorPrimaryDark">
+ <de.hdodenhof.circleimageview.CircleImageView
+     android:layout_width="150dp"
+     android:layout_height="150dp"
+     android:src="@drawable/avatar"
+     android:layout_centerHorizontal="true"
+     android:id="@+id/profilepic"
+     android:layout_marginTop="30dp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Username"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/profilepic"
+        android:layout_marginTop="20dp"
+        android:textSize="30dp"
+        android:textColor="#ffffff"
+        android:textStyle="normal"
+        android:textAlignment="center"
+        android:id="@+id/profileusername"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="I am Using Lepit Chat App."
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/profileusername"
+        android:layout_marginTop="15dp"
+        android:textSize="18dp"
+        android:textColor="#ffffff"
+        android:textStyle="normal"
+        android:textAlignment="center"
+        android:id="@+id/profilestatus"/>
+    <Button
+        android:layout_width="200dp"
+        android:layout_height="45dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/profilestatus"
+        android:background="#ffffff"
+        android:text="Change Image"
+        android:textColor="@color/colorAccent"
+        android:id="@+id/changeimage"
+        android:layout_marginTop="80dp"
+        android:textStyle="bold"/>
+    <Button
+        android:layout_width="200dp"
+        android:layout_height="45dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/changeimage"
+        android:background="@color/colorAccent"
+        android:text="Change Status"
+        android:textColor="#ffffff"
+        android:id="@+id/changestatus"
+        android:layout_marginTop="30dp"
+        android:textStyle="bold"/>
+</RelativeLayout>
