@@ -197,7 +197,6 @@ public class Accountsetting extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         databaseReference.child("online").setValue("True");
-        Log.d("Start2","AccountSettings");
     }
 
     @Override

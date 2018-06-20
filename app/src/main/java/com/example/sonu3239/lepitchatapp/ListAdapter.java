@@ -8,11 +8,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.sonu3239.lepitchatapp.Models.Message;
 import com.google.firebase.auth.FirebaseAuth;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -32,20 +34,31 @@ public class ListAdapter extends ArrayAdapter<Message> {
 
         View view = layoutInflater.inflate(R.layout.message, null, false);
         TextView textView=view.findViewById(R.id.mdata);
+        ImageView imageView=view.findViewById(R.id.mimage);
         Message message = list.get(position);
         RelativeLayout.LayoutParams params= new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        if(uid.equals(message.getFrom()))
-        {
-            textView.setBackground(context.getResources().getDrawable(R.drawable.sender));
-            textView.setTextColor(Color.WHITE);
-            textView.setLayoutParams(params);
+        if(message.getType().equals("text")) {
+            if (uid.equals(message.getFrom())) {
+                textView.setBackground(context.getResources().getDrawable(R.drawable.sender));
+                textView.setTextColor(Color.WHITE);
+                textView.setLayoutParams(params);
+            } else {
+                textView.setBackground(context.getResources().getDrawable(R.drawable.receiver));
+                textView.setTextColor(Color.BLACK);
+            }
+            textView.setText(message.getContent());
         }
-        else
+        else if(message.getType().equals("image"))
         {
-            textView.setBackground(context.getResources().getDrawable(R.drawable.receiver));
-            textView.setTextColor(Color.BLACK);
-        }textView.setText(message.getContent());
+            textView.setVisibility(View.GONE);
+            Picasso.get().load(message.getContent()).resize(300,300).into(imageView);
+            if (uid.equals(message.getFrom())) {
+                imageView.setLayoutParams(params);
+            } else {
+
+            }
+        }
         return view;
     }
 }

@@ -1,5 +1,9 @@
 package com.example.sonu3239.lepitchatapp;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
@@ -16,9 +20,12 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.sonu3239.lepitchatapp.Models.Message;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -30,9 +37,13 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.rengwuxian.materialedittext.MaterialEditText;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
+import com.theartofdev.edmodo.cropper.CropImage;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -61,6 +72,7 @@ public class Chatuser extends AppCompatActivity {
       private static final int numerofmessage=10;
       private int times=1;
       private SwipeRefreshLayout swipeRefreshLayout;
+    private  static int Request_Code=100;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -129,7 +141,97 @@ public class Chatuser extends AppCompatActivity {
                 loadMessage();
             }
         });
+       sadd.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+               CharSequence options[]=new CharSequence[]{"Image","Video","Other"};
+               AlertDialog.Builder builder=new AlertDialog.Builder(Chatuser.this);
+               builder.setTitle("Select Item to Send");
+               builder.setItems(options, new DialogInterface.OnClickListener() {
+                   @Override
+                   public void onClick(DialogInterface dialogInterface, int i) {
+                       switch (i)
+                       {
+                           case 0:
+                               Intent intent = new Intent();
+                               intent.setType("image/*");
+                               intent.setAction(Intent.ACTION_GET_CONTENT);
+                               startActivityForResult(Intent.createChooser(intent, "Select Picture"), Request_Code);
+                               break;
+                           case 1:
+                               Toast.makeText(getApplicationContext(),"Video",Toast.LENGTH_SHORT).show();
+                               break;
+                           case 2:
+                               Toast.makeText(getApplicationContext(),"Other",Toast.LENGTH_SHORT).show();
+                               break;
+                       }
+                   }
+               });
+               builder.create().show();
+           }
+       });
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode==Request_Code&&resultCode==RESULT_OK&&data.getData()!=null)
+        {
+            Uri uri=data.getData();
+            CropImage.activity(uri).setAspectRatio(1,1)
+                    .start(this);
+
+        }
+        if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            CropImage.ActivityResult result = CropImage.getActivityResult(data);
+            if (resultCode == RESULT_OK) {
+                Uri resultUri = result.getUri();
+                StorageReference storageReference=FirebaseStorage.getInstance().getReference().child("Message_Images").child(resultUri.toString());
+                storageReference.putFile(resultUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        String sendmessage=taskSnapshot.getDownloadUrl().toString();
+                        SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss");
+                        Date date = new Date();
+                        final Message message=new Message("image",sendmessage,format.format(date),"False",currentuser);
+                        String one="Messages/"+currentuser+"/"+user;
+                        String two="Messages/"+user+"/"+currentuser;
+                        String chat1="Chat/"+currentuser+"/"+user;
+                        String chat2="Chat/"+user+"/"+currentuser;
+                        DatabaseReference ref=myref.child("Messages").child(currentuser).child(user).push();
+                        String key=ref.getKey();
+                        final Map data=new HashMap();
+                        data.put("lastmessgae",sendmessage);
+                        data.put("time", ServerValue.TIMESTAMP);
+                        smessage.setText("");
+                        Map map=new HashMap<>();
+                        map.put(one+"/"+key,message);
+                        map.put(two+"/"+key,message);
+                        final Map mymap=new HashMap<>();
+                        mymap.put(chat1,data);
+                        mymap.put(chat2,data);
+                        myref.updateChildren(map, new DatabaseReference.CompletionListener() {
+                            @Override
+                            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                                smessage.setText("");
+                                myref.updateChildren(mymap, new DatabaseReference.CompletionListener() {
+                                    @Override
+                                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+
+                                    }
+                                });
+                            }
+                        });
+
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getApplicationContext(),"Message Could not send",Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+            }
+        }
     }
 
     private void loadMessage() {

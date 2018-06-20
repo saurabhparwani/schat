@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.SearchView;
 import android.widget.Toolbar;
 
 import com.google.firebase.FirebaseApp;
@@ -48,38 +49,6 @@ public class Home extends AppCompatActivity {
         firebaseUser = firebaseAuth.getCurrentUser();
         databaseReference= FirebaseDatabase.getInstance().getReference().child("Users");
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.mainmenu,menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId()==R.id.logout)
-        {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss");
-            Date date = new Date();
-            databaseReference.child(firebaseUser.getUid()).child("online").setValue(format.format(date));
-            FirebaseAuth.getInstance().signOut();
-            Intent intent=new Intent(Home.this,MainActivity.class);
-            startActivity(intent);
-            finish();
-        }
-        else if(item.getItemId()==R.id.setting)
-        {
-            Intent intent=new Intent(Home.this,Accountsetting.class);
-            startActivity(intent);
-        }
-        else if(item.getItemId()==R.id.alluser)
-        {
-            Intent intent=new Intent(Home.this,AllUsers.class);
-            startActivity(intent);
-        }
-        return true;
-    }
-
     @Override
     protected void onStart() {
         super.onStart();

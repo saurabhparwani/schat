@@ -21,7 +21,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -35,6 +37,7 @@ public class ChatAdapter extends  RecyclerView.Adapter<ChatAdapter.ChatHolder> {
         this.userlist = userlist;
         databaseReference= FirebaseDatabase.getInstance().getReference().child("Users");
         myref=FirebaseDatabase.getInstance().getReference().child("Chat").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
     }
 
     @NonNull
@@ -49,12 +52,15 @@ public class ChatAdapter extends  RecyclerView.Adapter<ChatAdapter.ChatHolder> {
         final User user=userlist.get(position);
         holder.name.setText(user.getName());
         if(!user.getThumbnail().equals("Default"))
-            Picasso.get().load(user.getImage()).resize(100,100).into(holder.circleImageView);
+            Picasso.get().load(user.getThumbnail()).resize(100,100).placeholder(R.drawable.avatar).into(holder.circleImageView);
         myref.child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String lastmessage=dataSnapshot.child("lastmessgae").getValue().toString();
-                holder.status.setText(lastmessage);
+                if(lastmessage.contains("https://"))
+                  holder.status.setText("image");
+                else
+                    holder.status.setText(lastmessage);
             }
 
             @Override
@@ -91,5 +97,10 @@ public class ChatAdapter extends  RecyclerView.Adapter<ChatAdapter.ChatHolder> {
             status=itemView.findViewById(R.id.userlist_status);
             imageView=itemView.findViewById(R.id.isonline);
         }
+    }
+    public void filter(ArrayList<User> newlist) {
+        userlist=new ArrayList<>();
+        userlist.addAll(newlist);
+        notifyDataSetChanged();
     }
 }
