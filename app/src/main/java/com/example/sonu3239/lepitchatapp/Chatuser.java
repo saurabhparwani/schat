@@ -1,10 +1,12 @@
 package com.example.sonu3239.lepitchatapp;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -72,7 +74,10 @@ public class Chatuser extends AppCompatActivity {
       private static final int numerofmessage=10;
       private int times=1;
       private SwipeRefreshLayout swipeRefreshLayout;
-    private  static int Request_Code=100;
+      private  static int Request_Code=100;
+      private static int REQUEST_TAKE_GALLERY_VIDEO=101;
+      private StorageReference storef;
+      private ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,6 +93,11 @@ public class Chatuser extends AppCompatActivity {
         smessage=findViewById(R.id.message);
         sadd=findViewById(R.id.add);
         ssend=findViewById(R.id.send);
+        progressDialog=new ProgressDialog(this);
+        progressDialog.setTitle("Sending Video..");
+        progressDialog.setMessage("Please Wait a while");
+        progressDialog.setCancelable(false);
+        storef=FirebaseStorage.getInstance().getReference();
         swipeRefreshLayout=findViewById(R.id.swipelayout);
         listView=findViewById(R.id.messages);
         listAdapter=new ListAdapter(this,R.layout.message,list);
@@ -159,7 +169,10 @@ public class Chatuser extends AppCompatActivity {
                                startActivityForResult(Intent.createChooser(intent, "Select Picture"), Request_Code);
                                break;
                            case 1:
-                               Toast.makeText(getApplicationContext(),"Video",Toast.LENGTH_SHORT).show();
+                               Intent intent1 = new Intent();
+                               intent1.setType("video/*");
+                               intent1.setAction(Intent.ACTION_GET_CONTENT);
+                               startActivityForResult(Intent.createChooser(intent1,"Select Video"),REQUEST_TAKE_GALLERY_VIDEO);
                                break;
                            case 2:
                                Toast.makeText(getApplicationContext(),"Other",Toast.LENGTH_SHORT).show();
@@ -174,18 +187,69 @@ public class Chatuser extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode==Request_Code&&resultCode==RESULT_OK&&data.getData()!=null)
+        if(resultCode==RESULT_OK&&data.getData()!=null)
         {
-            Uri uri=data.getData();
-            CropImage.activity(uri).setAspectRatio(1,1)
-                    .start(this);
-
+            if(requestCode==Request_Code) {
+                Uri uri = data.getData();
+                CropImage.activity(uri).setAspectRatio(1, 1)
+                        .start(this);
+            }
+            else if(requestCode==REQUEST_TAKE_GALLERY_VIDEO)
+            {
+                Uri uri=data.getData();
+                progressDialog.show();
+                StorageReference storageReference=storef.child("Videos").child(uri.toString());
+                storageReference.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                    @Override
+                    public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                        String sendmessage=taskSnapshot.getDownloadUrl().toString();
+                        SimpleDateFormat format = new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss");
+                        Date date = new Date();
+                        final Message message=new Message("video",sendmessage,format.format(date),"False",currentuser);
+                        String one="Messages/"+currentuser+"/"+user;
+                        String two="Messages/"+user+"/"+currentuser;
+                        String chat1="Chat/"+currentuser+"/"+user;
+                        String chat2="Chat/"+user+"/"+currentuser;
+                        DatabaseReference ref=myref.child("Messages").child(currentuser).child(user).push();
+                        String key=ref.getKey();
+                        final Map data=new HashMap();
+                        data.put("lastmessgae",sendmessage);
+                        data.put("time", ServerValue.TIMESTAMP);
+                        smessage.setText("");
+                        Map map=new HashMap<>();
+                        map.put(one+"/"+key,message);
+                        map.put(two+"/"+key,message);
+                        final Map mymap=new HashMap<>();
+                        mymap.put(chat1,data);
+                        mymap.put(chat2,data);
+                        myref.updateChildren(map, new DatabaseReference.CompletionListener() {
+                            @Override
+                            public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                                smessage.setText("");
+                                myref.updateChildren(mymap, new DatabaseReference.CompletionListener() {
+                                    @Override
+                                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                                        Snackbar.make(findViewById(android.R.id.content),"Video Sent",Snackbar.LENGTH_SHORT).show();
+                                        progressDialog.cancel();
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Snackbar.make(findViewById(android.R.id.content),"Video not send",Snackbar.LENGTH_SHORT).show();
+                        progressDialog.cancel();
+                    }
+                });
+            }
         }
         if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
             CropImage.ActivityResult result = CropImage.getActivityResult(data);
             if (resultCode == RESULT_OK) {
                 Uri resultUri = result.getUri();
-                StorageReference storageReference=FirebaseStorage.getInstance().getReference().child("Message_Images").child(resultUri.toString());
+                StorageReference storageReference=storef.child("Message_Images").child(resultUri.toString());
                 storageReference.putFile(resultUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
@@ -226,7 +290,7 @@ public class Chatuser extends AppCompatActivity {
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(getApplicationContext(),"Message Could not send",Toast.LENGTH_SHORT).show();
+                        Snackbar.make(findViewById(android.R.id.content),"Image not send",Snackbar.LENGTH_SHORT).show();
                     }
                 });
 

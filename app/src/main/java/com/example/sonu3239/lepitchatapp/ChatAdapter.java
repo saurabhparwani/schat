@@ -58,7 +58,7 @@ public class ChatAdapter extends  RecyclerView.Adapter<ChatAdapter.ChatHolder> {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String lastmessage=dataSnapshot.child("lastmessgae").getValue().toString();
                 if(lastmessage.contains("https://"))
-                  holder.status.setText("image");
+                  holder.status.setText("image/video");
                 else
                     holder.status.setText(lastmessage);
             }

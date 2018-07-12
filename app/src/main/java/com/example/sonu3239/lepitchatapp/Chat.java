@@ -95,7 +95,6 @@ public class Chat extends Fragment {
 
                         }
                     });
-                   Log.d("User",p.getKey());
 
                    }
             }

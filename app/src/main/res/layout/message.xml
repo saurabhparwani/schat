@@ -16,12 +16,22 @@
       android:paddingRight="10dp"
       android:textSize="18dp"
       android:id="@+id/mdata"
-      android:gravity="left"/>
+      android:gravity="left"
+      />
   <ImageView
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:scaleType="centerCrop"
       android:layout_below="@id/mdata"
-      android:id="@+id/mimage"/>
-
+      android:id="@+id/mimage"
+      />
+  <ImageButton
+      android:layout_height="200dp"
+      android:layout_width="200dp"
+      android:id="@+id/VideoView"
+      android:scaleType="centerCrop"
+      android:visibility="gone"
+      android:layout_below="@id/mimage"
+      android:src="@drawable/playvideo"
+      />
 </RelativeLayout>
